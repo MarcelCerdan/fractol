@@ -6,7 +6,7 @@
 /*   By: mthibaul <mthibaul@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/29 20:07:28 by mthibaul          #+#    #+#             */
-/*   Updated: 2022/12/07 17:07:24 by mthibaul         ###   ########lyon.fr   */
+/*   Updated: 2022/12/13 15:09:13 by mthibaul         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "minilibx/mlx.h"
 # include <math.h>
 # include <stdio.h>
+# include <stdlib.h>
 
 /*--------COLOR---------*/
 
@@ -34,23 +35,22 @@
 
 /*--------IMAGE---------*/
 
-# define ZOOM 	100
-# define IMGX 	1500
-# define IMGY 	1080
+# define IMGX 	1200
+# define IMGY 	950
 
 /*--------FRACTAL---------*/
 
-# define MAX_IT 200
+# define MAX_IT 512
 # define B 		256.0
-# define YB 	1.5
 # define YA 	-1.5
-# define XB 	1.0
+# define YB 	1.5
 # define XA 	-2.0
+# define XB 	1.0
 
 /*--------KEYCODE---------*/
 
-# define SCR_UP 	4
-# define SCR_DWN 	5
+# define SCR_UP 	5
+# define SCR_DWN 	4
 # define ESC 		53
 
 /*--------STRUCTURES---------*/
@@ -68,6 +68,16 @@ typedef struct s_dot
 	float	y;
 }		t_dot;
 
+typedef struct s_fract
+{
+	double	xmin;
+	double	xmax;
+	double	ymin;
+	double	ymax;
+	int		x;
+	int		y;
+}		t_fract;
+
 typedef struct s_img
 {
 	void	*mlx;
@@ -84,9 +94,9 @@ typedef struct s_img
 t_img	create_empty_img(void);
 void	my_mlx_pixel_put(t_img *img, int x, int y, float color);
 int		create_trgb(t_vec3 col, int t);
-int		fractol(t_img *img, float zoom);
-void	put_color(double si, t_img *img, t_dot dot);
-int		ft_zoom(int keycode, t_img *img);
+int		fractol(t_img *img, t_fract *mand);
+void	put_color(double si, t_img *img, t_fract *mand);
+int		ft_zoom(int keycode,t_dot z, t_fract *f, t_img *img);
 int		close_win(int keycode, t_img *img);
 
 #endif

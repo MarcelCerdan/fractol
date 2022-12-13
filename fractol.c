@@ -6,17 +6,17 @@
 /*   By: mthibaul <mthibaul@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 18:31:04 by mthibaul          #+#    #+#             */
-/*   Updated: 2022/12/07 23:15:11 by mthibaul         ###   ########lyon.fr   */
+/*   Updated: 2022/12/13 15:05:07 by mthibaul         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-void	mandelbrot(t_img *img, t_dot dot, t_dot c)
+void	mandelbrot(t_img *img, t_fract *mand, t_dot c)
 {
-	float	i;
-	float	si;
-	float	tmp;
+	double	i;
+	double	si;
+	double	tmp;
 	t_dot	z;
 
 	i = 0;
@@ -26,19 +26,19 @@ void	mandelbrot(t_img *img, t_dot dot, t_dot c)
 	{
 		tmp = z.x;
 		z.x = (z.x * z.x) - (z.y * z.y) + c.x;
-		z.y = 2 * tmp * z.y + c.y;
+		z.y = 2 * tmp * z.y - c.y;
 		i += 1;
 	}
-	if (i < 200)
+	if (i < MAX_IT)
 	{
 		si = i - log(log(hypot(z.x, z.y)) / log(B)) / log(2.0);
-		put_color(si, img, dot);
+		put_color(si, img, mand);
 	}
 	else
-		put_color(0, img, dot);
+		put_color(0, img, mand);
 }
 
-int	fractol(t_img *img, float zoom)
+/*int	fractol(t_img *img, float zoom)
 {
 	t_dot	c;
 	t_dot	p;
@@ -61,50 +61,48 @@ int	fractol(t_img *img, float zoom)
 			dot.y = p.x * a.y + p.y * a.x;
 			c.x = -0.745 + dot.x * zoom;
 			c.y = 0.186 + dot.y * zoom;
-			mandelbrot(img, dot, c);
+			mandelbrot(img, coord, c);
 			coord.x++;
 		}
 		coord.x = 0;
 		coord.y++;
 	}
 	return (0);
-}
+}*/
 
-/*int	fractol(t_img *img, float zoom)
+int	fractol(t_img *img, t_fract *mand)
 {
 	t_dot	c;
-	t_dot	p;
-	t_dot	dot;
 
-	dot.x = 0.0;
-	dot.y = 0.0;
-	while (dot.y < IMGY)
+	mand->y = 0;
+	while (mand->y < IMGY)
 	{
-		c.y = dot.y * (YB - YA) / IMGY + YA;
-		while (dot.x < IMGX)
+		c.y = mand->ymax - (mand->y * (mand->ymax - mand->ymin) / IMGY);
+		while (mand->x < IMGX)
 		{
-			c.x = dot.x * (XB - XA) / IMGX + XA;
-			if (256.0 * pow(hypot(c.x, c.y), 2) - 96.0
-				* hypot(c.x, c.y) + 32.0 * c.x - 3.0 < 0.0)
-				put_color(0, img, dot);
-			else
-				mandelbrot(img, dot, c);
-			dot.x++;
+			c.x = mand->xmin + (mand->x * (mand->xmax - mand->xmin) / IMGX);
+			mandelbrot(img, mand, c);
+			mand->x++;
 		}
-		dot.x = 0;
-		dot.y++;
+		mand->x = 0;
+		mand->y++;
 	}
 	return (0);
-}*/
+}
 
 int	main(void)
 {
 	t_img	img;
+	t_fract	mand;
 
+	mand.xmin = XA;
+	mand.xmax = XB;
+	mand.ymin = YA;
+	mand.ymax = YB;
 	img = create_empty_img();
-	fractol(&img, 1.0);
+	fractol(&img, &mand);
 	mlx_put_image_to_window(img.mlx, img.win, img.img, 0, 0);
-	mlx_mouse_hook(img.win, ft_zoom, &img);
+	mlx_key_hook(img.win, ft_zoom, &mand);
 	mlx_key_hook(img.win, close_win, &img);
 	mlx_loop(img.mlx);
 	return (0);
