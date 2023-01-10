@@ -6,30 +6,44 @@
 /*   By: mthibaul <mthibaul@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/01 12:29:31 by mthibaul          #+#    #+#             */
-/*   Updated: 2022/12/13 14:47:10 by mthibaul         ###   ########lyon.fr   */
+/*   Updated: 2023/01/10 12:27:34 by mthibaul         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-int	create_trgb(t_vec3 col, int t)
+void	colors(int k, t_fract *f)
+{
+	if (k == ONE)
+		f->col = blue();
+	else if (k == TWO)
+		f->col = black();
+	else if (k == THREE)
+		f->col = red_white();
+	else if (k == FOUR)
+		f->col = purple();
+	else if (k == FIVE)
+		f->col = green();
+}
+
+int	create_trgb(t_rgb col, int t)
 {
 	int	r;
 	int	g;
 	int	b;
 
-	r = col.x * 255;
-	g = col.y * 255;
-	b = col.z * 255;
+	r = col.r * 255;
+	g = col.g * 255;
+	b = col.b * 255;
 	return (t << 24 | r << 16 | g << 8 | b);
 }
 
-void	put_color(double si, t_img *img, t_fract *mand)
+void	put_color(double si, t_fract *f)
 {
-	t_vec3	col;
+	t_rgb			col;
 
-	col.x = AX + BX * cos(3.0 + CX * si + DX);
-	col.y = AY + BY * cos(3.0 + CY * si + DY);
-	col.z = AZ + BZ * cos(3.0 + CZ * si + DZ);
-	my_mlx_pixel_put(img, mand->x, mand->y, create_trgb(col, 0));
+	col.r = f->col.a.r + f->col.b.r * cos(3.0 + f->col.c.r * si + f->col.d.r);
+	col.g = f->col.a.g + f->col.b.g * cos(3.0 + f->col.c.g * si + f->col.d.g);
+	col.b = f->col.a.b + f->col.b.b * cos(3.0 + f->col.c.b * si + f->col.d.b);
+	my_mlx_pixel_put(f, f->x, f->y, create_trgb(col, 0));
 }
